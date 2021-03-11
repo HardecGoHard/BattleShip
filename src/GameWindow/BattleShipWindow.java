@@ -26,9 +26,9 @@ public class BattleShipWindow extends ShipWindows {
             MetalLookAndFeel.setCurrentTheme(new OceanTheme());
             UIManager.setLookAndFeel(new MetalLookAndFeel());
         } catch (UnsupportedLookAndFeelException e) {
-            System.err.println("Can't use the specified look and feel on this platform.");
+            messageErorrPanel("Can't use the specified look and feel on this platform.");
         } catch (Exception e) {
-            System.err.println("Couldn't get specified look and feel, for some reason.");
+            messageErorrPanel("Couldn't get specified look and feel, for some reason.");
         }
         setTitle("Морской бой");
         setLocationRelativeTo(null);
@@ -88,7 +88,7 @@ public class BattleShipWindow extends ShipWindows {
     }
 
     public void openFriendBoxesAround(Box boxShot) {
-        Ship ship = friendlyShipsController.getShip(boxShot); //по боксу в который выстрелили получаем корабль
+        Ship ship = friendlyShipsController.getShip(boxShot);
         if (ship != null) {
             if (ship.getCountDeck() == getCountOpenBoxOfShip(ship))
                 friendlyShipsController.openAllBoxesAroundShip(ship);
@@ -162,38 +162,45 @@ public class BattleShipWindow extends ShipWindows {
     }
 
     public void getShoot(int x, int y) {
-        Box box = enemyShipsController.getBox(enemyShipsController.getField(), x, y);
-        if (!box.isBoxIsOpen()) {
-            box.setBoxIsOpen(true);
-            openBoxesAround(box);
-        }
-        if (!checkEndOfGame()) {
-            enemyField.deleteMouseAction();
-            getEnemyShoot();
-            enemyField.addMouseAction();
-        } else {
-            if (gameHelper.checkEndField(enemyShipsController))
-                messageWarningPanel("ВЫ ВЫИГРАЛИ!");
-            else {
-                messageErorrPanel("ВЫ ПРОИГРАЛИ!");
+        if (!checkShootingBox(x, y, myShoots)) {
+            Box box = enemyShipsController.getBox(enemyShipsController.getField(), x, y);
+            if (!box.isBoxIsOpen()) {
+                box.setBoxIsOpen(true);
+                openBoxesAround(box);
             }
-            enemyField.deleteMouseAction();
+            myShoots.add(box);
+            if (!checkEndOfGame()) {
+                enemyField.deleteMouseAction();
+                getEnemyShoot();
+                enemyField.addMouseAction();
+            } else {
+                if (gameHelper.checkEndField(enemyShipsController))
+                    messageWarningPanel("ВЫ ВЫИГРАЛИ!");
+                else {
+                    messageErorrPanel("ВЫ ПРОИГРАЛИ!");
+                }
+                enemyField.deleteMouseAction();
+            }
+            enemyField.repaint();
+            myField.repaint();
         }
-        enemyField.repaint();
-        myField.repaint();
     }
 
     public void getEnemyShoot() {
-        int x =(1 + rnd.nextInt(10));
-        int y = (1 + rnd.nextInt(10));
-      //  while (!checkShootingBox(x,y,enemyShoots)){}
-        Box box = friendlyShipsController.getBox(friendlyShipsController.getField(),
-                x * ModelsPicture.IMAGE_SIZE,
-                y * ModelsPicture.IMAGE_SIZE);
+        int x = (1 + rnd.nextInt(10)) * ModelsPicture.IMAGE_SIZE;
+        int y = (1 + rnd.nextInt(10)) * ModelsPicture.IMAGE_SIZE;
+        while (checkShootingBox(x, y, enemyShoots)) {
+            x = (1 + rnd.nextInt(10)) * ModelsPicture.IMAGE_SIZE;
+            y = (1 + rnd.nextInt(10))* ModelsPicture.IMAGE_SIZE;
+            System.out.println(x);
+            System.out.println(y);
+        }
+        Box box = friendlyShipsController.getBox(friendlyShipsController.getField(), x, y);
         if (!box.isBoxIsOpen()) {
             box.setBoxIsOpen(true);
             openFriendBoxesAround(box);
         }
+        enemyShoots.add(box);
     }
 
     public boolean checkShootingBox(int x, int y, ArrayList<Box> arrayShoots) {

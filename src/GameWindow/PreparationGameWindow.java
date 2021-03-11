@@ -28,9 +28,9 @@ public class PreparationGameWindow extends ShipWindows {
             MetalLookAndFeel.setCurrentTheme(new OceanTheme());
             UIManager.setLookAndFeel(new MetalLookAndFeel());
         } catch (UnsupportedLookAndFeelException e) {
-            System.err.println("Can't use the specified look and feel on this platform.");
+            messageErorrPanel("Can't use the specified look and feel on this platform.");
         } catch (Exception e) {
-            System.err.println("Couldn't get specified look and feel, for some reason.");
+            messageErorrPanel("Couldn't get specified look and feel, for some reason.");
         }
         setTitle("Морской бой");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

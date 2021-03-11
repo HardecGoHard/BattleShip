@@ -130,6 +130,9 @@ public class ChoosePanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             if (gameWindow.isGameIsReady()){
                 gameWindow.loadBattleShipWindow();
+            }else {
+                gameWindow.messageErorrPanel("Расставьте все корабли!");
+
             }
         }
     }
