@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,6 +20,7 @@ public class BattleShipWindow extends ShipWindows {
     private EnemyFieldPanel enemyField;
     private ArrayList<Box> myShoots = new ArrayList<>();
     private ArrayList<Box> enemyShoots = new ArrayList<>();
+    private JLabel label;
 
     private Random rnd = new Random(System.currentTimeMillis());
 
@@ -39,7 +42,10 @@ public class BattleShipWindow extends ShipWindows {
         myField = new MyField(this);
         enemyField = new EnemyFieldPanel(this);
         gameHelper.createNewEnemyField();
+        label = new JLabel("Ваш ход");
+        label.setForeground(new Color(0, 100, 0));
         generateEnemyField();
+        add(label, BorderLayout.CENTER);
         add(myField, BorderLayout.WEST);
         add(enemyField, BorderLayout.EAST);
         pack();
@@ -162,7 +168,6 @@ public class BattleShipWindow extends ShipWindows {
     }
 
     public void getShoot(int x, int y) {
-        if (!checkShootingBox(x, y, myShoots)) {
             Box box = enemyShipsController.getBox(enemyShipsController.getField(), x, y);
             if (!box.isBoxIsOpen()) {
                 box.setBoxIsOpen(true);
@@ -172,6 +177,8 @@ public class BattleShipWindow extends ShipWindows {
             if (!checkEndOfGame()) {
                 enemyField.deleteMouseAction();
                 getEnemyShoot();
+                label.setText("Ваш ход");
+                label.setForeground(new Color(0, 100, 0));
                 enemyField.addMouseAction();
             } else {
                 if (gameHelper.checkEndField(enemyShipsController))
@@ -184,9 +191,11 @@ public class BattleShipWindow extends ShipWindows {
             enemyField.repaint();
             myField.repaint();
         }
-    }
+
 
     public void getEnemyShoot() {
+        label.setText("Ход \n противника");
+        label.setForeground(new Color(139, 0, 0));
         int x = (1 + rnd.nextInt(10)) * ModelsPicture.IMAGE_SIZE;
         int y = (1 + rnd.nextInt(10)) * ModelsPicture.IMAGE_SIZE;
         while (checkShootingBox(x, y, enemyShoots)) {
